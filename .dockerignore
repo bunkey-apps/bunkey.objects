@@ -1,0 +1,8 @@
+node_modules
+dist
+config/local.js
+.tmp
+dump.rdb
+lib-cov
+npm-debug.log
+yarn-error.log

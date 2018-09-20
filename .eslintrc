@@ -1,0 +1,48 @@
+{
+    "root": true,
+    "extends": "airbnb-base",
+    "env": {
+        "es6": true,
+        "node": true
+    },
+    "plugins": [
+        "import"
+    ],
+    "parserOptions": {
+       "ecmaVersion": 2017,
+       "sourceType": "module",
+       "ecmaFeatures": {
+         "globalReturn": true,
+         "experimentalObjectRestSpread": true
+       }
+    },
+    "rules": {
+        "indent": "off",
+        "no-tabs": "off",
+        "no-param-reassign": "off",
+        "no-trailing-spaces": "off",
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "semi": 1,
+        "func-names": ["error", "never"],
+        "consistent-return": "off",
+        "no-var": 1,
+        "class-methods-use-this": "off",
+        "spaced-comment": ["error", "always", { "exceptions": ["*"] }],
+        "max-len": ["error", { "ignoreComments": true }, { "code": 120 }],
+        "no-console": "off",
+        "no-use-before-define": "off",
+        "no-underscore-dangle": ["error", { "allow": ["_id"] }]
+    },
+    "globals": {
+        "cano": true,
+        "AuthorizationError": true,
+        "CanoError": true,
+        "Client": true,
+        "ClientError": true,
+        "ObjectError": true,
+        "ObjectModel": true
+    }
+}

@@ -1,0 +1,51 @@
+{
+    "name": "bunkey.object",
+    "version": "1.0.0",
+    "description": "This is the object micro service of Bunkey.",
+    "main": "server.js",
+    "repository": "http://",
+    "author": "Ernesto Rojas <ernesto20145@gmail.com>",
+    "license": "Apache-2.0",
+    "scripts": {
+        "start": "nodemon server.js --exec babel-node",
+        "build": "babel . --ignore node_modules -d dist",
+        "deploy": "./deploy.sh -d bunkey.administration",
+        "serve": "node dist/server.js",
+        "test": "mocha -R spec --compilers js:babel-core/register ./test/**/*.js"
+    },
+    "dependencies": {
+        "@koa/cors": "^2.2.1",
+        "cano-cube-controllers": "^1.0.0",
+        "cano-cube-error": "^2.0.1",
+        "cano-cube-mongoose": "^2.0.0",
+        "cano-cube-passport": "^1.0.0",
+        "cano-cube-policies": "^1.0.0",
+        "cano-cube-routers": "^1.0.1",
+        "cano-cube-services": "^1.0.0",
+        "cano-koa": "^1.1.2",
+        "dotenv": "^6.0.0",
+        "koa-bodyparser": "^4.2.0",
+        "koa-logger": "^3.2.0",
+        "koa-router": "^7.4.0",
+        "lodash": "^4.17.10",
+        "moment": "^2.22.1",
+        "mongoose-model-class": "^2.0.0",
+        "passport-localapikey-update": "^0.6.0",
+        "search-service-mongoose": "^2.1.2",
+        "winston": "^2.4.2"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0",
+        "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
+        "babel-plugin-transform-runtime": "^6.23.0",
+        "babel-preset-env": "^1.7.0",
+        "babel-preset-stage-2": "^6.24.1",
+        "babel-register": "^6.26.0",
+        "eslint": "^4.19.1",
+        "eslint-config-airbnb-base": "^12.1.0",
+        "eslint-plugin-import": "^2.12.0",
+        "mocha": "^5.2.0",
+        "nodemon": "^1.17.4",
+        "supertest": "^3.1.0"
+    }
+}

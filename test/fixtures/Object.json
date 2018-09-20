@@ -1,0 +1,35 @@
+[
+  {
+    "name": "Folder One",
+    "type": "folder"
+  },
+  {
+    "name": "Folder Two",
+    "type": "folder"
+  },
+  {
+    "name": "Folder Three",
+    "type": "folder"
+  },
+  {
+    "name": "File One",
+    "metadata": {
+      "tags": [{ "_id": "12345678890", "name": "File test" }]
+    },
+    "type": "image"
+  },
+  {
+    "name": "File Two",
+    "metadata": {
+      "tags": [{ "_id": "12345678890", "name": "File test" }]
+    },
+    "type": "video"
+  },
+  {
+    "name": "File Three",
+    "metadata": {
+      "tags": [{ "_id": "12345678890", "name": "File test" }]
+    },
+    "type": "video"
+  }
+]
