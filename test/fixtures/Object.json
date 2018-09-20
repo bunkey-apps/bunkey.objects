@@ -16,6 +16,8 @@
     "metadata": {
       "tags": [{ "_id": "12345678890", "name": "File test" }]
     },
+    "guid": "qwertyuiop",
+    "originalURL": "https://domine.com/imgs/image.png",
     "type": "image"
   },
   {
@@ -23,6 +25,8 @@
     "metadata": {
       "tags": [{ "_id": "12345678890", "name": "File test" }]
     },
+    "guid": "qwertyuiop",
+    "originalURL": "https://domine.com/video/video.mp4",
     "type": "video"
   },
   {
@@ -30,6 +34,8 @@
     "metadata": {
       "tags": [{ "_id": "12345678890", "name": "File test" }]
     },
+    "guid": "qwertyuiop",
+    "originalURL": "https://domine.com/video/video.mp4",
     "type": "video"
   }
 ]

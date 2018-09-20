@@ -14,6 +14,10 @@ module.exports = {
     status: 400,
     description: 'Object type invalid.',
   },
+  notUpdateRootObject: {
+    status: 400,
+    description: 'You can not update the root object.',
+  },
   notDeleteRootObject: {
     status: 400,
     description: 'You can not delete the root object.',
@@ -21,5 +25,9 @@ module.exports = {
   invalidTypeAsParent: {
     status: 400,
     description: 'Parent object is not a folder.',
+  },
+  MissingFields: {
+    status: 400,
+    description: 'You doesnt have provided all the fields required for this action.',
   },
 };
