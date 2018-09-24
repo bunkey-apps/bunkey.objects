@@ -9,3 +9,8 @@
 | MONGODB_URI | URI of connection to mongodb |
 | ADMINISTRATION_APIKEY | API key assigned to Administration Microservice |
 | API_GATEWAY_APIKEY | API key assigned to API Gateway |
+| AWS_BUCKET_NAME | AWS Bucket name |
+| S3_PUBLIC_URL | AWS S3 public name |
+| AWS_ACCESS_KEY_ID | AWS access key ID |
+| AWS_SECRET_KEY_ID | AWS secret key ID |
+| AWS_REGION | AWS region |
