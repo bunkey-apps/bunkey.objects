@@ -15,6 +15,7 @@
     },
     "dependencies": {
         "@koa/cors": "^2.2.1",
+        "aws-sdk": "^2.292.0",
         "cano-cube-controllers": "^1.0.0",
         "cano-cube-error": "^2.0.1",
         "cano-cube-mongoose": "^2.0.0",
@@ -32,6 +33,7 @@
         "mongoose-model-class": "^2.0.0",
         "passport-localapikey-update": "^0.6.0",
         "search-service-mongoose": "^2.1.2",
+        "uuid": "^3.3.2",
         "winston": "^2.4.2"
     },
     "devDependencies": {

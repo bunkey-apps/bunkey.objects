@@ -41,6 +41,7 @@
         "AuthorizationError": true,
         "CanoError": true,
         "Client": true,
+        "S3Service": true,
         "ClientError": true,
         "ObjectError": true,
         "ObjectModel": true
