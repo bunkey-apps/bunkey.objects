@@ -25,10 +25,9 @@ class S3Service {
     const futureFileURL = `${this.s3URL}${Key}`;
     return new Promise((resolve, reject) => {
       this.s3.getSignedUrl(action, params, (err, url) => {
-        console.log('url', url.split('?'));
-        const u = url.split('?')[0];
+        // const u = url.split('?')[0];
         if (err) reject(err);
-        resolve({ uuid, url: u, futureFileURL });
+        resolve({ uuid, url, futureFileURL });
       });
     });
   }
