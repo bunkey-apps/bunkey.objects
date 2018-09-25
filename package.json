@@ -9,7 +9,7 @@
     "scripts": {
         "start": "nodemon server.js --exec babel-node",
         "build": "babel . --ignore node_modules -d dist",
-        "deploy": "./deploy.sh -d bunkey.administration",
+        "deploy": "./deploy.sh -d bunkey.object",
         "serve": "node dist/server.js",
         "test": "mocha -R spec --compilers js:babel-core/register ./test/**/*.js"
     },
