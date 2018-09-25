@@ -16,7 +16,7 @@ RUN apk add --no-cache git
 
 # Install app dependencies while the images is builded
 ADD package.json $appDir
-RUN npm i -g pm2
+RUN yarn global add pm2
 RUN yarn
 
 # Bundle app source
