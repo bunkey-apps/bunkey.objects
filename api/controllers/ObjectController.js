@@ -37,6 +37,38 @@ class ObjectController {
     await ObjectModel.deleteById(object.id);
     response.status = 204;
   }
+
+  async createWorkspace({ params, response }) {
+    const { user, client } = params;
+    await Workspace.create({ user, client });
+    response.status = 204;
+  }
+
+  async getWorkspace({ params, response }) {
+    const { user, client } = params;
+    response.body = await Workspace.getByUserIdAndClientId(user, client);
+    response.status = 200;
+  }
+
+  async addObjectToWorkspace({ request, params, response }) {
+    const { user, client } = params;
+    const { body: { target, object } } = request;
+    await Workspace.addObject(target, user, client, object);
+    response.status = 204;
+  }
+
+  async deleteObjectToWorkspace({ request, params, response }) {
+    const { user, client } = params;
+    const { body: { target, object } } = request;
+    await Workspace.deleteObject(target, user, client, object);
+    response.status = 204;
+  }
+
+  async deleteWorkspace({ params, response }) {
+    const { user, client } = params;
+    await Workspace.delete(user, client);
+    response.status = 204;
+  }
 }
 
 module.exports = ObjectController;

@@ -26,6 +26,10 @@ module.exports = {
     status: 400,
     description: 'Parent object is not a folder.',
   },
+  WorkspaceNotFound: {
+    status: 404,
+    description: 'Workspace not found.',
+  },
   MissingFields: {
     status: 400,
     description: 'You doesnt have provided all the fields required for this action.',
