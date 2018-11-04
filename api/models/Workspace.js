@@ -9,7 +9,7 @@ class Workspace extends MongooseModel {
       favorites: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }] },
     };
   }
-
+  // @TODO Verificar que el usuario esté relacionado con el cliente.
   // async beforeSave(doc, next) {
   //   try {
   //     const { client, user } = doc;
