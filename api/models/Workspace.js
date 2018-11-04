@@ -10,6 +10,16 @@ class Workspace extends MongooseModel {
     };
   }
 
+  // async beforeSave(doc, next) {
+  //   try {
+  //     const { client, user } = doc;
+  //     await UserService.isHasPermission(user, client);
+  //     next();
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
+
   static async getByUserIdAndClientId(user, client) {
     const workspace = await this.findOne({ user, client });
     if (!workspace) {

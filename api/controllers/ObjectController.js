@@ -46,6 +46,10 @@ class ObjectController {
 
   async getWorkspace({ params, response }) {
     const { user, client } = params;
+    const workspace = await Workspace.findOne({ user, client });
+    if (!workspace) {
+      await Workspace.create({ user, client });
+    }
     response.body = await Workspace.getByUserIdAndClientId(user, client);
     response.status = 200;
   }
@@ -53,6 +57,10 @@ class ObjectController {
   async addObjectToWorkspace({ request, params, response }) {
     const { user, client } = params;
     const { body: { target, object } } = request;
+    const workspace = await Workspace.findOne({ user, client });
+    if (!workspace) {
+      await Workspace.create({ user, client });
+    }
     await Workspace.addObject(target, user, client, object);
     response.status = 204;
   }

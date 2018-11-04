@@ -42,6 +42,8 @@
         "CanoError": true,
         "Client": true,
         "Workspace": true,
+        "UserService": true,
+        "RequestService": true,
         "AuthPolices": true,
         "ObjectController": true,
         "S3Service": true,

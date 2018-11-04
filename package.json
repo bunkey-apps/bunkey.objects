@@ -32,6 +32,8 @@
         "moment": "^2.22.1",
         "mongoose-model-class": "^2.0.0",
         "passport-localapikey-update": "^0.6.0",
+        "request": "^2.88.0",
+        "request-promise-native": "^1.0.5",
         "search-service-mongoose": "^2.1.2",
         "uuid": "^3.3.2",
         "winston": "^2.4.2"
