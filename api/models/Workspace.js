@@ -21,7 +21,10 @@ class Workspace extends MongooseModel {
   // }
 
   static async getByUserIdAndClientId(user, client) {
-    const workspace = await this.findOne({ user, client });
+    const workspace = await this.findOne({ user, client })
+      .populate('objects')
+      .populate('favorites')
+      .exec();
     if (!workspace) {
       throw new ObjectError('WorkspaceNotFound');
     }
