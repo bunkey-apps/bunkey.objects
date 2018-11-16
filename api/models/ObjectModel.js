@@ -1,7 +1,6 @@
 import MongooseModel from 'mongoose-model-class';
 import includes from 'lodash/includes';
 import last from 'lodash/last';
-import filter from 'lodash/filter';
 import pick from 'lodash/pick';
 
 const OBJECT_TYPES = [
@@ -17,11 +16,14 @@ class ObjectModel extends MongooseModel {
   schema() {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
+      user: { type: MongooseModel.types.ObjectId },
       guid: { type: String, index: true },
       name: { type: String, index: true, require: true },
       originalURL: { type: String, index: true },
       metadata: { type: Object, index: true, default: {} },
-      type: { type: String, index: true, require: true, enum: OBJECT_TYPES },
+      type: {
+        type: String, index: true, require: true, enum: OBJECT_TYPES,
+      },
       children: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
       parents: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
     };
@@ -29,6 +31,9 @@ class ObjectModel extends MongooseModel {
 
   async beforeSave(doc, next) {
     try {
+      if (doc.type === 'workspace' && !doc.user) {
+        throw new ObjectError('MissingFields', 'User not specified.');
+      }
       const obj = await doc.model('ObjectModel').findOne({ client: doc.client, type: 'root' });
       if (obj) {
         const validTypes = [
@@ -39,6 +44,13 @@ class ObjectModel extends MongooseModel {
         ];
         if (!includes(validTypes, doc.type)) {
           throw new ObjectError('invalidType', 'Object type invalid.');
+        }
+      }
+      const parentLast = last(doc.parents);
+      if (parentLast) {
+        const parent = await doc.model('ObjectModel').findById(parentLast);
+        if (parent.type === 'workspace' && doc.type !== 'workspace') {
+          throw new ObjectError('invalidTypeAsParent', 'can\'t create object into workspace.');
         }
       }
       if (includes(['image', 'video'], doc.type)) {
@@ -61,15 +73,13 @@ class ObjectModel extends MongooseModel {
   }
 
   setChildren(object) {
-    const { _id, children } = this;
-    const data = { children: [...children, object.id] };
-    return this.model('ObjectModel').update({ _id }, { $set: data });
+    const { _id } = this;
+    return this.model('ObjectModel').update({ _id }, { $addToSet: { children: object.id } });
   }
 
   removeChildren(object) {
-    const { _id, children } = this;
-    const data = { children: filter(children, o => o !== object.id) };
-    return this.model('ObjectModel').update({ _id }, { $set: data });
+    const { _id } = this;
+    return this.model('ObjectModel').update({ _id }, { $pull: { children: object.id } });
   }
 
   static async getById(id) {

@@ -22,9 +22,8 @@ async function startRequest(opts) {
 }
 
 class RequestWrapper {
-
   constructor(baseUrl) {
-    this.baseUrl = baseUrl
+    this.baseUrl = baseUrl;
   }
 
   async get(resource, opts = {}) {
@@ -58,11 +57,10 @@ class RequestWrapper {
     const response = await startRequest(options);
     return response;
   }
-
 }
 
 module.exports = class RequestService {
   create(baseUrl) {
     return new RequestWrapper(baseUrl);
   }
-}
+};

@@ -38,41 +38,65 @@ class ObjectController {
     response.status = 204;
   }
 
-  async createWorkspace({ params, response }) {
+  async createFavorites({ params, response }) {
     const { user, client } = params;
     await Workspace.create({ user, client });
     response.status = 204;
   }
 
-  async getWorkspace({ params, response }) {
+  async getFavorites({ params, response }) {
     const { user, client } = params;
-    const workspace = await Workspace.findOne({ user, client });
+    let workspace = await Workspace.findOne({ user, client });
     if (!workspace) {
       await Workspace.create({ user, client });
     }
-    response.body = await Workspace.getByUserIdAndClientId(user, client);
+    workspace = await Workspace.getByUserIdAndClientId(user, client);
+    const cli = await Client.getById(workspace.client);
+    response.body = await cli.getObject(workspace.favorites);
     response.status = 200;
   }
 
-  async addObjectToWorkspace({ request, params, response }) {
-    const { user, client } = params;
-    const { body: { target, object } } = request;
-    const workspace = await Workspace.findOne({ user, client });
+  async addObjectToFavorites({ request, params, response }) {
+    const { user, client, target } = params;
+    const { body: { name, object } } = request;
+    let workspace = await Workspace.findOne({ user, client });
     if (!workspace) {
-      await Workspace.create({ user, client });
+      workspace = await Workspace.create({ user, client });
     }
-    await Workspace.addObject(target, user, client, object);
+    // Create Workspace Folder
+    if (name) {
+      await workspace.addObject(target, 'workspace', name);
+    }
+    // Add Object 
+    if (object) {
+      await workspace.addObject(target, 'object', object);
+    }
     response.status = 204;
   }
 
-  async deleteObjectToWorkspace({ request, params, response }) {
-    const { user, client } = params;
-    const { body: { target, object } } = request;
-    await Workspace.deleteObject(target, user, client, object);
+  async updateWorkspaceToFavorites({ request, params, response }) {
+    const { user, client, target } = params;
+    const { body } = request;
+    let workspace = await Workspace.findOne({ user, client });
+    if (!workspace) {
+      workspace = await Workspace.create({ user, client });
+    }
+    await workspace.updateObject(target, body);
     response.status = 204;
   }
 
-  async deleteWorkspace({ params, response }) {
+  async deleteObjectToFavorites({ request, params, response }) {
+    const { user, client, parent } = params;
+    const { body: { target } } = request;
+    let workspace = await Workspace.findOne({ user, client });
+    if (!workspace) {
+      workspace = await Workspace.create({ user, client });
+    }
+    await workspace.deleteObject(parent, target);
+    response.status = 204;
+  }
+
+  async deleteFavorites({ params, response }) {
     const { user, client } = params;
     await Workspace.delete(user, client);
     response.status = 204;

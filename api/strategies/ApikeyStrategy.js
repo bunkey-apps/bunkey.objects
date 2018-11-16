@@ -30,7 +30,6 @@ class ApiKeyStrategy extends Strategy {
    * @author Antonio Mejias
    */
   static verify(apikey, done) {
-    console.log('apikey', apikey);
     if (!cano.app.config.apiKeys[apikey]) {
       return done(new Error(`You have provided an Invalid API Key ${apikey}`, 401));
     }
