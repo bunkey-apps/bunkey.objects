@@ -21,6 +21,15 @@ class ObjectController {
     response.status = 201;
   }
 
+  async get({ query, state, response }) {
+    const { client } = state;
+    const { collection, pagination } = await ObjectModel.get({ ...query, client: client.id });
+    response.set('X-Pagination-Total-Count', pagination['X-Pagination-Total-Count']);
+    response.set('X-Pagination-Limit', pagination['X-Pagination-Limit']);
+    response.status = 200;
+    response.body = collection;
+  }
+
   async getById({ state, response }) {
     response.status = 200;
     response.body = state.object;

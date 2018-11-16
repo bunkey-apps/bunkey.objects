@@ -1,4 +1,5 @@
 import MongooseModel from 'mongoose-model-class';
+import SearchService from 'search-service-mongoose';
 import includes from 'lodash/includes';
 import last from 'lodash/last';
 import pick from 'lodash/pick';
@@ -82,6 +83,13 @@ class ObjectModel extends MongooseModel {
     return this.model('ObjectModel').update({ _id }, { $pull: { children: object.id } });
   }
 
+  static async get(query) {
+    cano.log.debug('get -> query', query);
+    const criteria = buildCriteria(query);
+    const opts = buildOpts(query);
+    return SearchService.search(this, criteria, opts);
+  }
+
   static async getById(id) {
     const object = await this.findById(id);
     if (!object) {
@@ -115,6 +123,32 @@ class ObjectModel extends MongooseModel {
   options() {
     return { timestamps: true, collection: 'documents' };
   }
+}
+
+function buildOpts(query) {
+  const {
+    page = 1,
+    limit = 10,
+    orderBy = '-createdAt',
+    fields = null,
+  } = query;
+  return {
+    page,
+    limit,
+    orderBy,
+    fields,
+  };
+}
+
+function buildCriteria({ client, tag }) {
+  const criteria = {
+    client: MongooseModel.adapter.Types.ObjectId(client),
+    type: { $nin: ['root', 'workspace'] },
+  };
+  if (tag) {
+    Object.assign(criteria, { 'metadata.tags': { $regex: `.*${tag}.*` } });
+  }
+  return criteria;
 }
 
 module.exports = ObjectModel;

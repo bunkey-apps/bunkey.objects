@@ -45,6 +45,7 @@
         "UserService": true,
         "RequestService": true,
         "AuthPolices": true,
+        "ClientPolices": true,
         "ObjectController": true,
         "S3Service": true,
         "ClientError": true,
