@@ -140,11 +140,14 @@ function buildOpts(query) {
   };
 }
 
-function buildCriteria({ client, tag }) {
+function buildCriteria({ client, search, tag }) {
   const criteria = {
     client: MongooseModel.adapter.Types.ObjectId(client),
     type: { $nin: ['root', 'workspace'] },
   };
+  if (search) {
+    Object.assign(criteria, { $text: { $search: search } });
+  }
   if (tag) {
     Object.assign(criteria, { 'metadata.tags': { $regex: `.*${tag}.*` } });
   }
