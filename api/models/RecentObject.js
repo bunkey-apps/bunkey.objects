@@ -14,8 +14,6 @@ class RecentObject extends MongooseModel {
   static async get(query) {
     const criteria = buildCriteria(query);
     const opts = buildOpts(query);
-    cano.log.debug('criteria', criteria);
-    cano.log.debug('opts', opts);
     return SearchService.search(this, criteria, opts);
   }
 }
@@ -28,7 +26,7 @@ function buildOpts(query) {
   return {
     page,
     limit,
-    orderBy: 'date',
+    orderBy: '-date',
     fields: 'date,user,object',
     populations: 'object',
   };
