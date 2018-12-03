@@ -42,6 +42,8 @@
         "CanoError": true,
         "Client": true,
         "Workspace": true,
+        "RecentObject": true,
+        "RecentObjectController": true,
         "UserService": true,
         "RequestService": true,
         "AuthPolices": true,

@@ -30,7 +30,14 @@ class ObjectController {
     response.body = collection;
   }
 
-  async getById({ state, response }) {
+  async getById({ params, query, state, response }) {
+    const { id: client } = params;
+    const { user } = query;
+    if (user) {
+      const { _id: object } = state.object;
+      const criteria = { client, object, user };
+      await RecentObject.updateOne(criteria, { $set: { date: new Date() } }, { upsert: true });
+    }
     response.status = 200;
     response.body = state.object;
   }
