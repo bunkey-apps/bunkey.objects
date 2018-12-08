@@ -13,15 +13,28 @@ const OBJECT_TYPES = [
   'document',
 ];
 
+const copyRightTypes = [
+  'free',
+  'limited',
+  'own',
+];
+
 class ObjectModel extends MongooseModel {
   schema() {
+    const MetaData = new MongooseModel.Schema({
+      descriptiveTags: { type: [String], default: [] },
+      audiovisualTags: { type: [String], default: [] },
+      copyRight: { type: String, enum: copyRightTypes },
+      licenseFile: { type: String },
+      createdDate: { type: Date },
+    });
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId },
       guid: { type: String, index: true },
       name: { type: String, index: true, require: true },
       originalURL: { type: String, index: true },
-      metadata: { type: Object, index: true, default: {} },
+      metadata: { type: MetaData, default: {} },
       type: {
         type: String, index: true, require: true, enum: OBJECT_TYPES,
       },
