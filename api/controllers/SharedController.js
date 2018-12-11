@@ -1,43 +1,95 @@
+import MongooseModel from 'mongoose-model-class';
+import includes from 'lodash/includes';
+
+const invalidTypes = ['root', 'foder', 'workspace'];
+
 class SharedController {
     async create(ctx) {
         const { body } = ctx.request;
         const {
             object,
-            emitterUser,
-            name,
+            user,
             email,
         } = body;
-        let shared = await Shared.findOne({ object, 'receiverUser.email': email });
-        if (shared) {
-            throw new ObjectError('ObjectAlreadyShared', 'The object was already shared with this user.');
-        }
-        let response = await UserService.getById(emitterUser);
+        // Primero obtenemos el emisor
+        let response = await UserService.getById(user);
         const emitter = response.body;
-        response = await UserService.getByEmail(email);
-        const receiver = {};
-        if (response.body.length === 1) {
-            Object.assign(receiver, response.body[0]);
-        } else {
-            Object.assign(receiver, { _id: null, name, email });
-        }
+        // Segundo obtenemos el objeto
         const sharedObject = await ObjectModel.getById(object);
-        shared = await Shared.create({
-            client: sharedObject.client,
-            object,
-            emitterUser,
-            receiverUser: receiver,
-        });
-        await EmailService.sendSharedObject(shared, emitter, receiver, sharedObject);
+        if (includes(invalidTypes, sharedObject.type)) {
+            throw new ObjectError('SharedObjectTypeInvalid', 'Shared object type invalid.');
+        }
+        // Tercero buscamos al receptor
+        response = await UserService.getByEmail(email);
+        let isPublic = true;
+        let receiver = email;
+        let receiverUser = null;
+        if (response.body.length === 1) {
+            [receiverUser] = response.body;
+            // Verificamos si el usuario existente forma parte del workspace del cliente dueño del objeto
+            const ws = await Workspace.findOne({ client: sharedObject.client, user: receiverUser._id });
+            if (ws) {                
+                isPublic = false;
+                receiver = receiverUser._id;
+            }
+        }
+        // Cuarto buscamos si fue previamente compartido
+        const criteria = {};
+        if (MongooseModel.adapter.Types.ObjectId.isValid(receiver)) {
+            Object.assign(criteria, { $and: [{ object }, { $or: [{ receiverUser: receiver }, { receiverUser: email }] }] });
+        } else {
+            Object.assign(criteria, { $and: [{ object }, { receiverUser: receiver }] });
+        }
+        let shared = await Shared.findOne(criteria);
+        if (!shared) {
+            // Si no exite un previo, se crea
+            shared = await Shared.create({
+                client: sharedObject.client,
+                emitterUser: user,
+                isPublic,
+                object,
+                receiverUser: receiver,
+            });
+        }
+        // Finalmente se envia el correo para avisar al usuario receptor
+        if (isPublic) {
+            await EmailService.sendSharedObject(shared, emitter, receiver, sharedObject);
+        } else {
+            console.log('receiverUser', receiverUser);
+            await EmailService.sendSharedPrivateObject(emitter, receiverUser, sharedObject);            
+        }
         ctx.status = 204;
     }
 
     async validate(ctx) {
-        const { body } = ctx.request;
-        const { webToken } = body;
+        const { body: { webToken } } = ctx.request;
         const shared = await Shared.validate(webToken);
-        const { accessToken } = shared;
-        ctx.body = { accessToken };
+        const {
+            accessToken, 
+            client,
+            emitterUser,
+            object,
+            receiverUser,
+        } = shared;
+        const response = await UserService.getById(emitterUser);
+        const { _id, name } = response.body;
+        ctx.body = {
+            accessToken,
+            client,
+            emitterUser: { _id, name },
+            object,
+            receiverUser,
+        };
+        // ctx.body = shared;
         ctx.status = 200;
+    }
+
+    async get({ query, params: { client, user }, response }) {
+        const { collection, pagination } = await Shared.get({ ...query, client, 'receiverUser._id': user });
+        response.set('X-Pagination-Total-Count', pagination['X-Pagination-Total-Count']);
+        response.set('X-Pagination-Limit', pagination['X-Pagination-Limit']);
+        response.status = 200;
+        response.body = collection.map(r => r.object);
     }
 }
 

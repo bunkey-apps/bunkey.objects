@@ -22,10 +22,6 @@ module.exports = {
     status: 400,
     description: 'You can not delete the root object.',
   },
-  ObjectAlreadyShared: {
-    status: 400,
-    description: 'The object was already shared with this user.',
-  },
   invalidTypeAsParent: {
     status: 400,
     description: 'Parent object is not a folder.',
@@ -37,6 +33,14 @@ module.exports = {
   WorkspaceNotFound: {
     status: 404,
     description: 'Workspace not found.',
+  },
+  AccessDeniedObject: {
+    status: 403,
+    description: 'Access denied to the object.',
+  },
+  SharedObjectTypeInvalid: {
+    status: 400,
+    description: 'Shared object type invalid.',
   },
   MissingFields: {
     status: 400,

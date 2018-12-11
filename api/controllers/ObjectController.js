@@ -35,8 +35,7 @@ class ObjectController {
     const { user } = query;
     if (user) {
       const { _id: object } = state.object;
-      const criteria = { client, object, user };
-      await RecentObject.updateOne(criteria, { $set: { date: new Date() } }, { upsert: true });
+      await RecentObject.set({ client, object, user });
     }
     response.status = 200;
     response.body = state.object;

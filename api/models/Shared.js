@@ -1,5 +1,6 @@
 import MongooseModel from 'mongoose-model-class';
 import SearchService from 'search-service-mongoose';
+import moment from 'moment';
 
 class Shared extends MongooseModel {
   schema() {
@@ -7,34 +8,27 @@ class Shared extends MongooseModel {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       object: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', require: true },
       emitterUser: { type: MongooseModel.types.ObjectId, require: true },
-      receiverUser: { type: Object, require: true },
-      date: { type: Date, default: Date.now },
+      receiverUser: { type: String, require: true },
       webToken: { type: String, unique: true, index: true },
-      accessToken: { type: String, unique: true, index: true },
+      // accessToken: { type: String, unique: true, index: true },
+      expires: { type: Date },
+      isPublic: { type: Boolean, require: true },
+      status: { type: Boolean, default: true },
     };
   }
 
   async beforeSave(doc, next) {
-    const {
-      client,
-      emitterUser,
-      object,
-      receiverUser,
-    } = doc;
     doc.webToken = TokenService.createWebToken();
-    const user = { ...receiverUser, role: 'shared' };
-    const payload = {
-      client,
-      emitterUser,
-      object,
-      user,
-    };
-    doc.accessToken = TokenService.createToken(payload, '7d');
+    doc.expires = moment().add(7, 'days').toDate();
     next();
   }
 
   static async validate(webToken) {
-    const shared = await this.findOne({ webToken });
+    const criteria = { webToken, status: true, expires: { $gte: new Date() } };
+    const shared = await this.findOne(criteria)
+      .populate('object', 'name originalURL metadata type')
+      .populate('client', 'name')
+      .exec();
     if (!shared) {
       throw new ObjectError('WebTokenNotFound');
     }

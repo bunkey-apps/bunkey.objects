@@ -11,10 +11,15 @@ class RecentObject extends MongooseModel {
     };
   }
 
-  static async get(query) {
+  static get(query) {
     const criteria = buildCriteria(query);
     const opts = buildOpts(query);
     return SearchService.search(this, criteria, opts);
+  }
+
+  static set({ client, object, user }) {
+    const critera = { client, object, user };
+    return this.updateOne(critera, { $set: { date: new Date() } }, { upsert: true });
   }
 }
 

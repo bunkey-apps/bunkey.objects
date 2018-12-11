@@ -2,16 +2,10 @@ import MongooseModel from 'mongoose-model-class';
 
 class Workspace extends MongooseModel {
   schema() {
-    const Shared = new MongooseModel.Schema({
-      object: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', require: true },
-      user: { type: MongooseModel.types.ObjectId, require: true },
-      date: { type: Date, default: Date.now },
-    });
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId, require: true },
       favorites: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', index: true },
-      shared: { type: [Shared] },
     };
   }
   
@@ -28,6 +22,14 @@ class Workspace extends MongooseModel {
     });
     doc.favorites = favorites.id;
     next();
+  }
+
+  static async verifyAccess(user, client) {
+    const workspace = await this.findOne({ user, client });
+    if (!workspace) {
+      throw new ObjectError('AccessDeniedObject', 'Access denied to the object.');
+    }
+    return workspace;
   }
 
   static async getByUserIdAndClientId(user, client) {

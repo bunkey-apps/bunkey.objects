@@ -16,9 +16,8 @@ class TokenService {
 
   generateWebURL(purpose, webToken) {
     switch (purpose) {
-      case 'shared': {
+      case 'shared':
         return `${process.env.SHARED_URL}?webToken=${webToken}`;
-      }
       default:
     }
   }
