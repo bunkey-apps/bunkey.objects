@@ -1,9 +1,8 @@
 import Router from 'koa-router';
 
 const router = new Router({ prefix: '/clients' });
-const { ClientController, ObjectController } = cano.app.controllers;
 const { existCliAndObj, existClient } = ClientPolices;
-const { apiKey } = AuthPolices;
+const { apiKey } = AuthPolicies;
 const isApigateway = apiKey('apiGateway');
 const isAdministration = apiKey('administration');
 

@@ -2,10 +2,16 @@ import MongooseModel from 'mongoose-model-class';
 
 class Workspace extends MongooseModel {
   schema() {
+    const Shared = new MongooseModel.Schema({
+      object: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', require: true },
+      user: { type: MongooseModel.types.ObjectId, require: true },
+      date: { type: Date, default: Date.now },
+    });
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId, require: true },
       favorites: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', index: true },
+      shared: { type: [Shared] },
     };
   }
   

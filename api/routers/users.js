@@ -1,7 +1,7 @@
 import Router from 'koa-router';
 
 const router = new Router({ prefix: '/users' });
-const { apiKey } = AuthPolices;
+const { apiKey } = AuthPolicies;
 const isApigateway = apiKey('apiGateway');
 const isUser = apiKey('user');
 

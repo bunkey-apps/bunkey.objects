@@ -22,9 +22,17 @@ module.exports = {
     status: 400,
     description: 'You can not delete the root object.',
   },
+  ObjectAlreadyShared: {
+    status: 400,
+    description: 'The object was already shared with this user.',
+  },
   invalidTypeAsParent: {
     status: 400,
     description: 'Parent object is not a folder.',
+  },
+  WebTokenNotFound: {
+    status: 404,
+    description: 'Web Token not found.',
   },
   WorkspaceNotFound: {
     status: 404,
