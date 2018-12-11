@@ -51,15 +51,23 @@ function buildOpts(query) {
     page,
     limit,
     orderBy: '-date',
-    fields: 'date,user,object',
-    populations: 'object',
+    fields: 'client,object,emitterUser,receiverUser',
+    populations: 'client, object',
   };
 }
 
-function buildCriteria({ client, user }) {
+function buildCriteria({ client, receiverUser, status }) {
   const criteria = {
-    user: MongooseModel.adapter.Types.ObjectId(user),
-    client: MongooseModel.adapter.Types.ObjectId(client),
+    $and: [
+      { client: MongooseModel.adapter.Types.ObjectId(client) },
+      { 
+        $or: [
+          { receiverUser: MongooseModel.adapter.Types.ObjectId(receiverUser[0]) },
+          { receiverUser: receiverUser[1] },
+        ],
+      },
+      { status },
+    ],
   };
   return criteria;
 }

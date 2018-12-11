@@ -85,11 +85,18 @@ class SharedController {
     }
 
     async get({ query, params: { client, user }, response }) {
-        const { collection, pagination } = await Shared.get({ ...query, client, 'receiverUser._id': user });
+        const { body: receiverUser } = await UserService.getById(user);
+        const criteria = {
+            ...query,
+            client,
+            receiverUser: [user, receiverUser.email],
+            status: true,
+        };
+        const { collection, pagination } = await Shared.get(criteria);
         response.set('X-Pagination-Total-Count', pagination['X-Pagination-Total-Count']);
         response.set('X-Pagination-Limit', pagination['X-Pagination-Limit']);
         response.status = 200;
-        response.body = collection.map(r => r.object);
+        response.body = collection;
     }
 }
 
