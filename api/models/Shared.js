@@ -52,7 +52,7 @@ function buildOpts(query) {
     limit,
     orderBy: '-date',
     fields: 'client,object,emitterUser,receiverUser',
-    populations: 'client, object',
+    populations: 'client object',
   };
 }
 

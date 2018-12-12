@@ -1,5 +1,6 @@
 import MongooseModel from 'mongoose-model-class';
 import includes from 'lodash/includes';
+import map from 'lodash/map';
 
 const invalidTypes = ['root', 'foder', 'workspace'];
 
@@ -80,7 +81,6 @@ class SharedController {
             object,
             receiverUser,
         };
-        // ctx.body = shared;
         ctx.status = 200;
     }
 
