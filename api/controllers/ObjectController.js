@@ -40,6 +40,12 @@ class ObjectController {
     response.status = 200;
     response.body = state.object;
   }
+
+  async getWorkspace({ params, response }) {
+    const { id: client } = params;
+    response.status = 200;
+    response.body = await Workspace.find({ client }, 'user');
+  }
   
   async updateById({ state, request, response }) {
     const { object } = state;
