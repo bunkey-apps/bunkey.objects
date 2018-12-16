@@ -12,6 +12,7 @@ router.delete('/:id', isAdministration, ClientController.deleteById);
 
 router.get('/:id/workspace', isApigateway, existClient, ObjectController.getWorkspace);
 router.get('/:id/objects', isApigateway, existClient, ObjectController.get);
+router.put('/:id/objects', isApigateway, existClient, ObjectController.update);
 router.post('/:id/objects/:object', isApigateway, existCliAndObj, ObjectController.create);
 router.get('/:id/objects/:object', isApigateway, existCliAndObj, ObjectController.getById);
 router.put('/:id/objects/:object', isApigateway, existCliAndObj, ObjectController.updateById);

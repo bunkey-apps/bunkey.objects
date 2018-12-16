@@ -49,7 +49,34 @@ class ObjectController {
   
   async updateById({ state, request, response }) {
     const { object } = state;
-    await ObjectModel.updateById(object.id, request.body);
+    if (request.body.action) {
+      switch (request.body.action) {
+        case 'move':
+          await ObjectModel.move(object.id, request.body.folder);
+          break;
+        case 'setReadyStatus':
+          await ObjectModel.setReadyStatus([object.id]);
+          break;
+        default:
+          throw new ObjectError('InvalidAction', 'Invalid action.');
+      }
+    } else {
+      await ObjectModel.updateById(object.id, request.body);
+    }
+    response.status = 204;
+  }
+
+  async update({ request, response }) {
+    switch (request.body.action) {
+      // case 'move':
+      //   await ObjectModel.move(request.body.objects, request.body.folder);
+      //   break;
+      case 'setReadyStatus':
+        await ObjectModel.setReadyStatus(request.body.objects);
+        break;
+      default:
+        throw new ObjectError('InvalidAction', 'Invalid action.');
+    }
     response.status = 204;
   }
 

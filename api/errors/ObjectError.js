@@ -42,6 +42,18 @@ module.exports = {
     status: 400,
     description: 'Shared object type invalid.',
   },
+  FolderIsNotFromClient: {
+    status: 400,
+    description: 'Folder is not from the object\'s client.',
+  },
+  ObjectTargetIsNotFolder: {
+    status: 400,
+    description: 'Object target is not a folder.',
+  },
+  InvalidAction: {
+    status: 400,
+    description: 'Invalid Action.',
+  },
   MissingFields: {
     status: 400,
     description: 'You doesnt have provided all the fields required for this action.',

@@ -2,6 +2,7 @@ import MongooseModel from 'mongoose-model-class';
 import SearchService from 'search-service-mongoose';
 import includes from 'lodash/includes';
 import last from 'lodash/last';
+import remove from 'lodash/remove';
 import pick from 'lodash/pick';
 
 const OBJECT_TYPES = [
@@ -27,7 +28,7 @@ class ObjectModel extends MongooseModel {
       copyRight: { type: String, enum: copyRightTypes },
       licenseFile: { type: String },
       createdDate: { type: Date },
-    });
+    }, { _id: false });
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId },
@@ -40,6 +41,7 @@ class ObjectModel extends MongooseModel {
       },
       children: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
       parents: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
+      status: { type: String, enum: ['pending', 'ready'] },
     };
   }
 
@@ -79,6 +81,9 @@ class ObjectModel extends MongooseModel {
           const message = `Field unspecified: ${fields.join(',')}`;
           throw new ObjectError('MissingFields', message);
         }
+        doc.status = 'pending';
+      } else {
+        doc.status = 'ready';
       }
       next();
     } catch (error) {
@@ -97,7 +102,6 @@ class ObjectModel extends MongooseModel {
   }
 
   static async get(query) {
-    cano.log.debug('get -> query', query);
     const criteria = buildCriteria(query);
     const opts = buildOpts(query);
     return SearchService.search(this, criteria, opts);
@@ -128,6 +132,26 @@ class ObjectModel extends MongooseModel {
     await parent.removeChildren(object);
     return this.remove({ _id });
   }
+
+  static async move(objectId, folderId) {
+    const object = await this.findById(objectId);
+    const parentLast = last(object.parents);
+    const oldParent = await this.findById(parentLast);
+    const newParent = await this.findById(folderId);
+    if (!includes(['folder', 'root', 'workspace'], newParent.type)) {
+      throw new ObjectError('ObjectTargetIsNotFolder', 'Object target is not a folder.');
+    }
+    if (String(newParent.client) !== String(object.client)) {
+      throw new ObjectError('FolderIsNotFromClient', 'Folder is not from the object\'s client.');
+    }
+    await oldParent.removeChildren(object);
+    await newParent.setChildren(object);
+    await this.update({ _id: object.id }, { $set: { parents: [...newParent.parents, newParent.id] } });
+  }
+
+  static async setReadyStatus(objectIds) {
+    return this.update({ _id: { $in: objectIds } }, { $set: { status: 'ready' } });
+  }  
 
   config(schema) {
     schema.index({ '$**': 'text' });
