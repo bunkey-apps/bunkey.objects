@@ -2,7 +2,6 @@ import MongooseModel from 'mongoose-model-class';
 import SearchService from 'search-service-mongoose';
 import includes from 'lodash/includes';
 import last from 'lodash/last';
-import remove from 'lodash/remove';
 import pick from 'lodash/pick';
 
 const OBJECT_TYPES = [

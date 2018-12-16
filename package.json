@@ -34,6 +34,7 @@
         "mongoose-model-class": "^2.0.0",
         "nodemailer": "^4.7.0",
         "passport-localapikey-update": "^0.6.0",
+        "query-string": "^6.2.0",
         "rand-token": "^0.4.0",
         "request": "^2.88.0",
         "request-promise-native": "^1.0.5",

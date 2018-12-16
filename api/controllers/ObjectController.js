@@ -43,8 +43,9 @@ class ObjectController {
 
   async getWorkspace({ params, response }) {
     const { id: client } = params;
+    const users = await Workspace.getUsers(client);
     response.status = 200;
-    response.body = await Workspace.find({ client }, 'user');
+    response.body = users;
   }
   
   async updateById({ state, request, response }) {

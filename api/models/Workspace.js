@@ -1,4 +1,5 @@
 import MongooseModel from 'mongoose-model-class';
+import map from 'lodash/map';
 
 class Workspace extends MongooseModel {
   schema() {
@@ -22,6 +23,22 @@ class Workspace extends MongooseModel {
     });
     doc.favorites = favorites.id;
     next();
+  }
+
+  static async getUsers(client) {
+    const wss = await this.find({ client }, 'user');
+    if (wss.length === 0) {
+      return [];
+    }
+    const userIds = map(wss, ws => ws.user);
+    const query = {
+      ids: userIds,
+      roles: ['operator'],
+      fields: 'name,email,avatar',
+    };
+    const { body } = await UserService.get(query);
+    cano.log.debug('body', body);
+    return body;
   }
 
   static async verifyAccess(user, client) {
