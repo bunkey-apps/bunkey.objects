@@ -129,7 +129,9 @@ class ObjectModel extends MongooseModel {
     }
     const parent = await this.getById(last(object.parents));
     await parent.removeChildren(object);
-    return this.remove({ _id });
+    await RecentObject.deleteMany({ object: object.id });
+    await Shared.deleteMany({ object: object.id });
+    return this.deleteOne({ _id });
   }
 
   static async move(objectId, folderId) {
@@ -176,7 +178,14 @@ function buildOpts(query) {
   };
 }
 
-function buildCriteria({ client, search, tag, type }) {
+function buildCriteria(query) {
+  const {
+    client,
+    search,
+    status,
+    tag,
+    type,
+  } = query;
   const criteria = {
     client: MongooseModel.adapter.Types.ObjectId(client),
     type: { $nin: ['root', 'workspace'] },
@@ -184,11 +193,14 @@ function buildCriteria({ client, search, tag, type }) {
   if (search) {
     Object.assign(criteria, { $text: { $search: search } });
   }
-  if (type) {
-    Object.assign(criteria, { type });
+  if (status) {
+    Object.assign(criteria, { status });
   }
   if (tag) {
     Object.assign(criteria, { 'metadata.tags': { $regex: `.*${tag}.*` } });
+  }
+  if (type) {
+    Object.assign(criteria, { type });
   }
   return criteria;
 }
