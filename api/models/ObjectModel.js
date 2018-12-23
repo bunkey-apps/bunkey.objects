@@ -3,6 +3,7 @@ import SearchService from 'search-service-mongoose';
 import includes from 'lodash/includes';
 import last from 'lodash/last';
 import pick from 'lodash/pick';
+import moment from 'moment';
 
 const OBJECT_TYPES = [
   'root',
@@ -27,6 +28,7 @@ class ObjectModel extends MongooseModel {
       copyRight: { type: String, enum: copyRightTypes },
       licenseFile: { type: String },
       createdDate: { type: Date },
+      type: { type: String, enum: ['final', 'row'] },
     }, { _id: false });
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
@@ -185,7 +187,11 @@ function buildCriteria(query) {
     status,
     tag,
     type,
+    metadataType,
+    fromDate,
+    toDate,
   } = query;
+  const filterDate = [];
   const criteria = {
     client: MongooseModel.adapter.Types.ObjectId(client),
     type: { $nin: ['root', 'workspace'] },
@@ -196,11 +202,31 @@ function buildCriteria(query) {
   if (status) {
     Object.assign(criteria, { status });
   }
+  if (metadataType) {
+    Object.assign(criteria, { 'metadata.type': metadataType });
+  }
   if (tag) {
     Object.assign(criteria, { 'metadata.tags': { $regex: `.*${tag}.*` } });
   }
   if (type) {
     Object.assign(criteria, { type });
+  }
+  if (fromDate) {
+    filterDate.push({
+      createdAt: {
+        $gte: moment(fromDate, 'DD-MM-YYYY').toDate(),
+      },
+    });
+  }
+  if (toDate) {
+    filterDate.push({
+      createdAt: {
+        $lte: moment(toDate, 'DD-MM-YYYY').toDate(),
+      },
+    });
+  }
+  if (filterDate.length > 0) {
+    Object.assign(criteria, { $and: filterDate });
   }
   return criteria;
 }
