@@ -62,7 +62,7 @@ function buildCriteria({ client, receiverUser, status }) {
       { client: MongooseModel.adapter.Types.ObjectId(client) },
       { 
         $or: [
-          { receiverUser: MongooseModel.adapter.Types.ObjectId(receiverUser[0]) },
+          { receiverUser: receiverUser[0] },
           { receiverUser: receiverUser[1] },
         ],
       },

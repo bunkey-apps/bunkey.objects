@@ -36,9 +36,9 @@ class SharedController {
         // Cuarto buscamos si fue previamente compartido
         const criteria = {};
         if (MongooseModel.adapter.Types.ObjectId.isValid(receiver)) {
-            Object.assign(criteria, { $and: [{ object }, { $or: [{ receiverUser: receiver }, { receiverUser: email }] }] });
+            Object.assign(criteria, { $and: [{ object }, { $or: [{ receiverUser: receiver }, { receiverUser: email }] }, { status: true }] });
         } else {
-            Object.assign(criteria, { $and: [{ object }, { receiverUser: receiver }] });
+            Object.assign(criteria, { $and: [{ object }, { receiverUser: receiver }, { status: true }] });
         }
         let shared = await Shared.findOne(criteria);
         if (!shared) {
@@ -55,7 +55,6 @@ class SharedController {
         if (isPublic) {
             await EmailService.sendSharedObject(shared, emitter, receiver, sharedObject);
         } else {
-            console.log('receiverUser', receiverUser);
             await EmailService.sendSharedPrivateObject(emitter, receiverUser, sharedObject);            
         }
         ctx.status = 204;
