@@ -2,8 +2,14 @@ import MongooseModel from 'mongoose-model-class';
 
 class Client extends MongooseModel {
   schema() {
+    const AcountSetting = new MongooseModel.Schema({
+      logo: { type: String },
+      background: { type: String },
+      language: { type: String },
+    }, { _id: false });
     return {
       name: { type: String, index: true, require: true },
+      acountSetting: { type: AcountSetting, default: {} },
       root: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', index: true },
     };
   }

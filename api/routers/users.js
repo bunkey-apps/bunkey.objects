@@ -8,6 +8,7 @@ const isUser = apiKey('user');
 router.post('/', isUser, UserController.create)
       .put('/:id', isUser, UserController.updateById)
       .delete('/:id', isUser, UserController.deleteById)
+      .get('/:id/workspaces', isApigateway, ObjectController.getWorkspacesByUser)
 
       .post('/:user/clients/:client/favorites', isUser, ObjectController.createFavorites)
       .get('/:user/clients/:client/favorites', isApigateway, ObjectController.getFavorites)

@@ -33,7 +33,7 @@ class ObjectModel extends MongooseModel {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
-      guid: { type: String, index: true },
+      uuid: { type: String, index: true },
       name: { type: String, index: true, require: true },
       originalURL: { type: String, index: true },
       metadata: { type: MetaData, default: {} },
@@ -71,10 +71,10 @@ class ObjectModel extends MongooseModel {
         }
       }
       if (includes(['image', 'video'], doc.type)) {
-        if (!doc.guid || !doc.originalURL) {
+        if (!doc.uuid || !doc.originalURL) {
           const fields = [];
-          if (!doc.guid) {
-            fields.push('guid');
+          if (!doc.uuid) {
+            fields.push('uuid');
           }
           if (!doc.originalURL) {
             fields.push('originalURL');

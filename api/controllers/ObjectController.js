@@ -41,11 +41,18 @@ class ObjectController {
     response.body = state.object;
   }
 
-  async getWorkspace({ params, response }) {
+  async getWorkspacesByClient({ params, response }) {
     const { id: client } = params;
     const users = await Workspace.getUsers(client);
     response.status = 200;
     response.body = users;
+  }
+
+  async getWorkspacesByUser({ params, response }) {
+    const { id: user } = params;
+    const clients = await Workspace.getClients(user);
+    response.status = 200;
+    response.body = clients;
   }
   
   async updateById({ state, request, response }) {

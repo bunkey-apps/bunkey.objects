@@ -3,7 +3,6 @@
 import Nodemailer from 'nodemailer';
 import replace from 'lodash/replace';
 import fs from 'fs';
-import path from 'path';
 
 class EmailService {
   constructor() {
@@ -69,7 +68,7 @@ class EmailService {
 
 function getTemplate() {
   return new Promise((resolve, reject) => {
-    fs.readFile(path.join(__dirname, '../assets/template-email.html'), 'utf8', (err, data) => {
+    fs.readFile('./assets/template-email.html', 'utf8', (err, data) => {
       if (err) {
         reject(err);
       }

@@ -10,7 +10,7 @@ router.post('/', isAdministration, ClientController.create);
 router.put('/:id', isAdministration, ClientController.updateById);
 router.delete('/:id', isAdministration, ClientController.deleteById);
 
-router.get('/:id/workspace', isApigateway, existClient, ObjectController.getWorkspace);
+router.get('/:id/workspaces', isApigateway, existClient, ObjectController.getWorkspacesByClient);
 router.get('/:id/objects', isApigateway, existClient, ObjectController.get);
 router.put('/:id/objects', isApigateway, existClient, ObjectController.update);
 router.post('/:id/objects/:object', isApigateway, existCliAndObj, ObjectController.create);

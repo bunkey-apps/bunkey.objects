@@ -26,19 +26,17 @@ class Workspace extends MongooseModel {
   }
 
   static async getUsers(client) {
-    const wss = await this.find({ client }, 'user');
-    if (wss.length === 0) {
-      return [];
-    }
-    const userIds = map(wss, ws => ws.user);
-    const query = {
-      ids: userIds,
-      roles: ['operator'],
-      fields: 'name,email,avatar',
-    };
-    const { body } = await UserService.get(query);
-    cano.log.debug('body', body);
-    return body;
+    const wss = await this.find({ client })
+      .populate('user', 'name email avatar role')
+      .exec();
+    return map(wss, w => w.user);
+  }
+
+  static async getClients(user) {
+    const wss = await this.find({ user })
+      .populate('client', 'acountSetting name root')
+      .exec();
+    return map(wss, w => w.client);
   }
 
   static async verifyAccess(user, client) {
