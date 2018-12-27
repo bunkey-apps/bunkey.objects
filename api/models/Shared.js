@@ -7,10 +7,10 @@ class Shared extends MongooseModel {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       object: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', require: true },
-      emitterUser: { type: MongooseModel.types.ObjectId, require: true },
+      emitterUser: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
       receiverUser: { type: String, require: true },
       webToken: { type: String, unique: true, index: true },
-      // accessToken: { type: String, unique: true, index: true },
+      accessToken: { type: String, unique: true, index: true },
       expires: { type: Date },
       isPublic: { type: Boolean, require: true },
       status: { type: Boolean, default: true },

@@ -6,7 +6,7 @@ class RecentObject extends MongooseModel {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       object: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', require: true },
-      user: { type: MongooseModel.types.ObjectId, require: true },
+      user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
       date: { type: Date, default: Date.now },
     };
   }

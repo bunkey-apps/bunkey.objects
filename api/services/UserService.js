@@ -4,8 +4,7 @@ const baseUrl = process.env.USER_SERVICE_URL;
 const headers = {
   apikey: process.env.USER_APIKEY,
 };
-console.log('process.env.USER_SERVICE_URL', process.env.USER_SERVICE_URL);
-console.log('process.env.USER_APIKEY', process.env.USER_APIKEY);
+
 class UserService {
   async getByEmail(email) {
     const request = RequestService.create(baseUrl);

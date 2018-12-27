@@ -32,7 +32,7 @@ class ObjectModel extends MongooseModel {
     }, { _id: false });
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
-      user: { type: MongooseModel.types.ObjectId },
+      user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
       guid: { type: String, index: true },
       name: { type: String, index: true, require: true },
       originalURL: { type: String, index: true },

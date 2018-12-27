@@ -5,7 +5,7 @@ class Workspace extends MongooseModel {
   schema() {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
-      user: { type: MongooseModel.types.ObjectId, require: true },
+      user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
       favorites: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', index: true },
     };
   }

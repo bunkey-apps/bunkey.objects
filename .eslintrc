@@ -38,27 +38,33 @@
     },
     "globals": {
         "cano": true,
+        "Client": true,
+        "ObjectModel": true,
+        "RecentObject": true,
+        "Shared": true,
+        "User": true,
+        "Workspace": true,
+
+        "ClientController": true,
+        "ObjectController": true,
+        "PresignedURLController": true,
+        "RecentObjectController": true,
+        "SharedController": true,
+        "UserController": true,
+        
         "AuthorizationError": true,
         "CanoError": true,
-        "Client": true,
-        "Workspace": true,
-        "RecentObject": true,
-        "RecentObjectController": true,
-        "UserService": true,
-        "EmailService": true,
-        "TokenService": true,
-        "AuthPolicies": true,
-        "PresignedURLController": true,
-        "ClientController": true,
-        "SharedController": true,
-        "Shared": true,
-        "RequestService": true,
-        "AuthPolices": true,
-        "ClientPolices": true,
-        "ObjectController": true,
-        "S3Service": true,
         "ClientError": true,
         "ObjectError": true,
-        "ObjectModel": true
+        "UserError": true,
+        
+        "AuthPolicies": true,
+        "ClientPolices": true,
+        
+        "EmailService": true,
+        "RequestService": true,
+        "S3Service": true,
+        "TokenService": true,
+        "UserService": true
     }
 }
