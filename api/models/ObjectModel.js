@@ -71,6 +71,10 @@ class ObjectModel extends MongooseModel {
         }
       }
       if (includes(['image', 'video'], doc.type)) {
+        // @TODO Borrar luego que front haga el cambio a uuid. 
+        if (!doc.uuid && doc.guid) {
+          doc.uuid = doc.guid;
+        }
         if (!doc.uuid || !doc.originalURL) {
           const fields = [];
           if (!doc.uuid) {
