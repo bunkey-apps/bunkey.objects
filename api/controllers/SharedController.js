@@ -1,6 +1,7 @@
 import MongooseModel from 'mongoose-model-class';
 import moment from 'moment';
 import includes from 'lodash/includes';
+import { resolve, reject } from 'any-promise';
 
 const invalidTypes = ['root', 'workspace'];
 
@@ -62,6 +63,21 @@ class SharedController {
             await EmailService.sendSharedObject(shared, emitter, receiver, sharedObject);
         } else {
             await EmailService.sendSharedPrivateObject(emitter, receiverUser, sharedObject);            
+        }
+        ctx.status = 204;
+    }
+
+    async revoke(ctx) {
+        const { body } = ctx.request;
+        const {
+            object,
+            email,
+        } = body;
+        await Shared.deleteOne({ object, receiverUser: email });
+        const sharedObject = await ObjectModel.getById(object);
+        await sharedObject.removeSharedExternal(email);
+        if (sharedObject.type === 'folder') {
+            await ObjectService.removeSharedExternalInChildren(email, sharedObject.children);
         }
         ctx.status = 204;
     }

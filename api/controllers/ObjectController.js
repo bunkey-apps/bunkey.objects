@@ -1,4 +1,5 @@
 import includes from 'lodash/includes';
+import filter from 'lodash/filter';
 
 const validTypes = [
   'root',
@@ -33,15 +34,19 @@ class ObjectController {
   async getById({ params, query, state, response }) {
     const { id: client } = params;
     const { user, shared } = query;
+    const { object } = state;
+    const { children = [] } = object;
     if (user) {
-      const { _id: object } = state.object;
-      await RecentObject.set({ client, object, user });
-    }
-    if (shared && !includes(state.object.sharedExternal, shared)) {
-      throw new ObjectError('InsufficientPrivileges', 'External user invalid.');
-    }
+      await RecentObject.set({ client, object: object._id, user });
+    } else if (shared) {
+      if (!includes(object.sharedExternal, shared)) {
+        throw new ObjectError('InsufficientPrivileges', 'External user invalid.');
+      } else {
+        object.children = filter(children, child => child && includes(child.sharedExternal, shared));
+      }
+    }    
     response.status = 200;
-    response.body = state.object;
+    response.body = object;
   }
 
   async getWorkspacesByClient({ params, response }) {
