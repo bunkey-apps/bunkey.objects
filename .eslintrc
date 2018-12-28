@@ -62,6 +62,7 @@
         "ClientPolices": true,
         
         "EmailService": true,
+        "ObjectService": true,
         "RequestService": true,
         "S3Service": true,
         "TokenService": true,

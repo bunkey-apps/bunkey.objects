@@ -32,10 +32,13 @@ class ObjectController {
 
   async getById({ params, query, state, response }) {
     const { id: client } = params;
-    const { user } = query;
+    const { user, shared } = query;
     if (user) {
       const { _id: object } = state.object;
       await RecentObject.set({ client, object, user });
+    }
+    if (shared && !includes(state.object.sharedExternal, shared)) {
+      throw new ObjectError('InsufficientPrivileges', 'External user invalid.');
     }
     response.status = 200;
     response.body = state.object;

@@ -20,7 +20,17 @@ class Shared extends MongooseModel {
   async beforeSave(doc, next) {
     doc.webToken = TokenService.createWebToken();
     doc.expires = moment().add(7, 'days').toDate();
+    doc.accessToken = TokenService.createToken({ user: buildPayloadToken(doc) }, '7d');
     next();
+  }
+
+  static refreshWebToken(shared) {
+    const data = {
+      webToken: TokenService.createWebToken(),
+      expires: moment().add(7, 'days').toDate(),
+      accessToken: TokenService.createToken({ user: buildPayloadToken(shared) }, '7d'),
+    };
+    return this.findByIdAndUpdate(shared.id, { $set: data });
   }
 
   static async validate(webToken) {
@@ -40,6 +50,15 @@ class Shared extends MongooseModel {
     const opts = buildOpts(query);
     return SearchService.search(this, criteria, opts);
   }
+}
+
+function buildPayloadToken(shared) {
+  return {
+    role: 'shared',
+    email: shared.receiverUser,
+    client: shared.client,
+    object: shared.object,
+  };
 }
 
 function buildOpts(query) {

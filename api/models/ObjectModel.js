@@ -33,6 +33,7 @@ class ObjectModel extends MongooseModel {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
+      guid: { type: String },
       uuid: { type: String, index: true },
       name: { type: String, index: true, require: true },
       originalURL: { type: String, index: true },
@@ -40,6 +41,7 @@ class ObjectModel extends MongooseModel {
       type: {
         type: String, index: true, require: true, enum: OBJECT_TYPES,
       },
+      sharedExternal: { type: [{ type: String }], default: [], index: true },
       children: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
       parents: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
       status: { type: String, enum: ['pending', 'ready'] },
@@ -71,7 +73,7 @@ class ObjectModel extends MongooseModel {
         }
       }
       if (includes(['image', 'video'], doc.type)) {
-        // @TODO Borrar luego que front haga el cambio a uuid. 
+        // @TODO Borrar luego que front haga el cambio a uuid.
         if (!doc.uuid && doc.guid) {
           doc.uuid = doc.guid;
         }
@@ -104,6 +106,16 @@ class ObjectModel extends MongooseModel {
   removeChildren(object) {
     const { _id } = this;
     return this.model('ObjectModel').update({ _id }, { $pull: { children: object.id } });
+  }
+
+  setSharedExternal(email) {
+    const { _id } = this;
+    return this.model('ObjectModel').update({ _id }, { $addToSet: { sharedExternal: email } });
+  }
+
+  removeSharedExternal(email) {
+    const { _id } = this;
+    return this.model('ObjectModel').update({ _id }, { $pull: { sharedExternal: email } });
   }
 
   static async get(query) {

@@ -42,6 +42,10 @@ module.exports = {
     status: 400,
     description: 'Shared object type invalid.',
   },
+  InsufficientPrivileges: {
+    description: 'Does not have the necessary privileges to perform this operation.',
+    status: 403,
+},
   FolderIsNotFromClient: {
     status: 400,
     description: 'Folder is not from the object\'s client.',

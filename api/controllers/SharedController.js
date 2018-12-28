@@ -1,7 +1,8 @@
 import MongooseModel from 'mongoose-model-class';
+import moment from 'moment';
 import includes from 'lodash/includes';
 
-const invalidTypes = ['root', 'foder', 'workspace'];
+const invalidTypes = ['root', 'workspace'];
 
 class SharedController {
     async create(ctx) {
@@ -12,23 +13,20 @@ class SharedController {
             email,
         } = body;
         // Primero obtenemos el emisor
-        let response = await UserService.getById(user);
-        const emitter = response.body;
+        const emitter = await User.getById(user);
         // Segundo obtenemos el objeto
         const sharedObject = await ObjectModel.getById(object);
         if (includes(invalidTypes, sharedObject.type)) {
             throw new ObjectError('SharedObjectTypeInvalid', 'Shared object type invalid.');
         }
         // Tercero buscamos al receptor
-        response = await UserService.getByEmail(email);
+        const receiverUser = await User.findOne({ email });
         let isPublic = true;
         let receiver = email;
-        let receiverUser = null;
-        if (response.body.length === 1) {
-            [receiverUser] = response.body;
+        if (receiverUser) {
             // Verificamos si el usuario existente forma parte del workspace del cliente dueño del objeto
             const ws = await Workspace.findOne({ client: sharedObject.client, user: receiverUser._id });
-            if (ws) {                
+            if (ws) {
                 isPublic = false;
                 receiver = receiverUser._id;
             }
@@ -40,6 +38,12 @@ class SharedController {
         } else {
             Object.assign(criteria, { $and: [{ object }, { receiverUser: receiver }, { status: true }] });
         }
+        if (isPublic) {
+            await sharedObject.setSharedExternal(receiver);
+            if (sharedObject.type === 'folder') {
+                await ObjectService.setSharedExternalInChildren(receiver, sharedObject.children);
+            }
+        }
         let shared = await Shared.findOne(criteria);
         if (!shared) {
             // Si no exite un previo, se crea
@@ -50,6 +54,8 @@ class SharedController {
                 object,
                 receiverUser: receiver,
             });
+        } else if (shared && isPublic && moment().isAfter(shared.expires)) {
+            shared = await Shared.refreshWebToken(shared);
         }
         // Finalmente se envia el correo para avisar al usuario receptor
         if (isPublic) {
@@ -64,20 +70,10 @@ class SharedController {
         const { body: { webToken } } = ctx.request;
         const shared = await Shared.validate(webToken);
         const {
-            accessToken, 
-            client,
-            emitterUser,
-            object,
-            receiverUser,
+            accessToken,
         } = shared;
-        const response = await UserService.getById(emitterUser);
-        const { _id, name } = response.body;
         ctx.body = {
             accessToken,
-            client,
-            emitterUser: { _id, name },
-            object,
-            receiverUser,
         };
         ctx.status = 200;
     }
