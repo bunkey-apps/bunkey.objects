@@ -187,12 +187,14 @@ function buildOpts(query) {
     limit = 10,
     orderBy = '-createdAt',
     fields = null,
+    all = false,
   } = query;
   return {
     page,
     limit,
     orderBy,
     fields,
+    all,
   };
 }
 
@@ -213,7 +215,9 @@ function buildCriteria(query) {
     type: { $nin: ['root', 'workspace'] },
   };
   if (search) {
-    Object.assign(criteria, { $text: { $search: search } });
+    Object.assign(criteria, {
+      $text: { $search: search },
+    });
   }
   if (status) {
     Object.assign(criteria, { status });
@@ -222,7 +226,12 @@ function buildCriteria(query) {
     Object.assign(criteria, { 'metadata.type': metadataType });
   }
   if (tag) {
-    Object.assign(criteria, { 'metadata.tags': { $regex: `.*${tag}.*` } });
+    Object.assign(criteria, {
+      $or: [
+        { 'metadata.descriptiveTags': { $regex: `.*${tag}.*` } },
+        { 'metadata.audiovisualTags': { $regex: `.*${tag}.*` } },
+      ],
+    });
   }
   if (type) {
     Object.assign(criteria, { type });
