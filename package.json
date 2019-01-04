@@ -15,7 +15,9 @@
     },
     "dependencies": {
         "@koa/cors": "^2.2.1",
+        "amqplib": "^0.5.3",
         "aws-sdk": "^2.292.0",
+        "cano-cube": "^1.0.0",
         "cano-cube-controllers": "^1.0.0",
         "cano-cube-error": "^2.0.1",
         "cano-cube-mongoose": "^2.0.0",

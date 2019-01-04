@@ -33,14 +33,14 @@ class ObjectModel extends MongooseModel {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
-      guid: { type: String },
-      uuid: { type: String, index: true },
+      uuid: { type: String, index: true, unique: true },
       name: { type: String, index: true, require: true },
       originalURL: { type: String, index: true },
       metadata: { type: MetaData, default: {} },
       type: {
         type: String, index: true, require: true, enum: OBJECT_TYPES,
       },
+      autoTaggingReady: { type: Boolean, default: false },
       sharedExternal: { type: [{ type: String }], default: [], index: true },
       children: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
       parents: { type: [{ type: MongooseModel.types.ObjectId, ref: 'ObjectModel' }], index: true, default: [] },
@@ -73,10 +73,6 @@ class ObjectModel extends MongooseModel {
         }
       }
       if (includes(['image', 'video'], doc.type)) {
-        // @TODO Borrar luego que front haga el cambio a uuid.
-        if (!doc.uuid && doc.guid) {
-          doc.uuid = doc.guid;
-        }
         if (!doc.uuid || !doc.originalURL) {
           const fields = [];
           if (!doc.uuid) {
@@ -96,6 +92,24 @@ class ObjectModel extends MongooseModel {
     } catch (error) {
       next(error);
     }
+  }
+
+  async afterSave(doc, next) {
+    const { uuid } = doc;
+    const autoTags = await AutoTags.findOne({ uuid });
+    if (autoTags && autoTags.ready) {
+      await doc.setAutoTags(autoTags.result);
+    }
+    next();
+  }
+
+  setAutoTags(tags) {
+    const { _id } = this;
+    cano.log.debug('setDescriptiveTags -> tags', tags);
+    return this.model('ObjectModel').updateOne({ _id }, {
+      $addToSet: { 'metadata.descriptiveTags': { $each: tags } },
+      $set: { autoTaggingReady: true },
+    });
   }
 
   setChildren(object) {

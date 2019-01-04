@@ -19,15 +19,14 @@ class S3Service {
       Bucket: this.bucketName,
       Expires: 1800,
       Metadata: {
-        semanticalFileName: uuid,
+        uuid,
       },
     };
     const futureFileURL = `${this.s3URL}${Key}`;
     return new Promise((resolve, reject) => {
       this.s3.getSignedUrl(action, params, (err, url) => {
         if (err) reject(err);
-        const u = url.split('?')[0];
-        resolve({ uuid, url: u, futureFileURL });
+        resolve({ uuid, url, futureFileURL });
       });
     });
   }
