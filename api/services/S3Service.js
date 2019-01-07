@@ -10,18 +10,20 @@ class S3Service {
       region: process.env.AWS_REGION,
     });
   }
-
+  /* TODO: Se debe arreglar el permiso del archivo a uno más acorde.
+    */
   getPresignedURL({ Key, mimeType: ContentType, uuid }, action = 'putObject') {
     const params = {
       Key,
       ContentType,
-      ACL: 'bucket-owner-full-control',
+      ACL: 'public-read',
       Bucket: this.bucketName,
       Expires: 1800,
       Metadata: {
         uuid,
       },
     };
+    cano.log.debug('params', params);
     const futureFileURL = `${this.s3URL}${Key}`;
     return new Promise((resolve, reject) => {
       this.s3.getSignedUrl(action, params, (err, url) => {
