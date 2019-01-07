@@ -10,9 +10,11 @@ class S3Service {
       region: process.env.AWS_REGION,
     });
   }
+
   /* TODO: Se debe arreglar el permiso del archivo a uno más acorde.
     */
-  getPresignedURL({ Key, mimeType: ContentType, uuid }, action = 'putObject') {
+
+    getPresignedURL({ Key, mimeType: ContentType, uuid }, action = 'putObject') {
     const params = {
       Key,
       ContentType,
