@@ -183,7 +183,7 @@ class ObjectModel extends MongooseModel {
   }
 
   static async setReadyStatus(objectIds) {
-    return this.update({ _id: { $in: objectIds } }, { $set: { status: 'ready' } });
+    return this.updateMany({ _id: { $in: objectIds } }, { $set: { status: 'ready' } });
   }  
 
   config(schema) {
