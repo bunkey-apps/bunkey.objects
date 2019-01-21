@@ -35,7 +35,9 @@ class ObjectModel extends MongooseModel {
       user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
       uuid: { type: String, index: true, unique: true },
       name: { type: String, index: true, require: true },
-      originalURL: { type: String, index: true },
+      originalURL: { type: String, index: true, require: true },
+      mediaQualityURL: { type: String, index: true },
+      lowQualityURL: { type: String, index: true },
       metadata: { type: MetaData, default: {} },
       type: {
         type: String, index: true, require: true, enum: OBJECT_TYPES,
@@ -84,6 +86,8 @@ class ObjectModel extends MongooseModel {
           const message = `Field unspecified: ${fields.join(',')}`;
           throw new ObjectError('MissingFields', message);
         }
+        doc.mediaQualityURL = doc.originalURL;
+        doc.lowQualityURL = doc.originalURL;
         doc.status = 'pending';
       } else {
         doc.status = 'ready';
@@ -184,7 +188,7 @@ class ObjectModel extends MongooseModel {
 
   static async setReadyStatus(objectIds) {
     return this.updateMany({ _id: { $in: objectIds } }, { $set: { status: 'ready' } });
-  }  
+  }
 
   config(schema) {
     schema.index({ '$**': 'text' });
@@ -234,7 +238,11 @@ function buildCriteria(query) {
     });
   }
   if (status) {
-    Object.assign(criteria, { status });
+    if (status === 'pending') {
+      Object.assign(criteria, { status, autoTaggingReady: true });
+    } else {
+      Object.assign(criteria, { status });
+    }
   }
   if (metadataType) {
     Object.assign(criteria, { 'metadata.type': metadataType });
