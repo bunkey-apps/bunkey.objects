@@ -60,11 +60,12 @@ async function processVideo(action, content) {
 
 async function processVideoMediaConvert(content) {
   if (content.status === 'ERROR') {
-    return cano.log.error('TagService -> process -> Invalid imagen content:', content.amazonError);
+    return cano.log.error('TagService -> process -> Invalid video content:', content.amazonError);
   }
   const { objUUID: uuid, result } = content;
   const { lowQualityURL, mediaQualityURL } = result;
-  await ObjectModel.updateOne({ uuid }, { $set: { lowQualityURL, mediaQualityURL } });
+  const res = await ObjectModel.updateOne({ uuid }, { $set: { lowQualityURL, mediaQualityURL } });
+  cano.log.debug('ObjectModel.updateOne -> result', res);
 }
 
 module.exports = TagService;
