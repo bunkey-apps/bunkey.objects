@@ -65,7 +65,7 @@ async function processVideoMediaConvert(content) {
   const { objUUID: uuid, result } = content;
   const { lowQualityURL, mediaQualityURL } = result;
   const res = await ObjectModel.updateOne({ uuid }, { $set: { lowQualityURL, mediaQualityURL } });
-  cano.log.debug('ObjectModel.updateOne -> result', res);
+  cano.log.debug('ObjectModel.updateOne -> result', JSON.stringify(res));
 }
 
 module.exports = TagService;
