@@ -18,6 +18,9 @@ class TagService {
       case 'VIDEO-TAGGING':
         processVideo(READY_ACTION, content);
         break;
+      case 'VIDEO-MEDIA-CONVERT':
+        processVideoMediaConvert(content);
+        break;
       default:
         break;
     }
@@ -53,6 +56,15 @@ async function processVideo(action, content) {
     const autoTags = await AutoTags.findOne({ jobId });
     await autoTags.setResult(result);
   }
+}
+
+async function processVideoMediaConvert(content) {
+  if (content.status === 'ERROR') {
+    return cano.log.error('TagService -> process -> Invalid imagen content:', content.amazonError);
+  }
+  const { objUUID: uuid, result } = content;
+  const { lowQualityURL, mediaQualityURL } = result;
+  await ObjectModel.updateOne({ uuid }, { $set: { lowQualityURL, mediaQualityURL } });
 }
 
 module.exports = TagService;
