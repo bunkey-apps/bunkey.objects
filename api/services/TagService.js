@@ -21,6 +21,9 @@ class TagService {
       case 'VIDEO-MEDIA-CONVERT':
         processVideoMediaConvert(content);
         break;
+      case 'IMAGE-RESIZE':
+        processImageResize(content);
+        break;
       default:
         break;
     }
@@ -70,6 +73,21 @@ async function processVideoMediaConvert(content) {
     cano.log.debug('ObjectModel.updateOne -> result', JSON.stringify(res));
   } else {
     cano.log.debug(`Video with uuid ${uuid} not found`);
+  }
+}
+
+async function processImageResize(content) {
+  if (content.status === 'ERROR') {
+    return cano.log.error('TagService -> process -> Invalid image content:', content.amazonError);
+  }
+  const { uuid, result } = content;
+  const { lowQualityURL, mediaQualityURL } = result;
+  const image = await ObjectModel.findOne({ uuid });
+  if (image) {
+    const res = await ObjectModel.updateOne({ _id: image.id }, { $set: { lowQualityURL, mediaQualityURL } });
+    cano.log.debug('ObjectModel.updateOne -> result', JSON.stringify(res));
+  } else {
+    cano.log.debug(`Image with uuid ${uuid} not found`);
   }
 }
 
