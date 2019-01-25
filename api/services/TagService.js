@@ -64,11 +64,8 @@ async function processVideoMediaConvert(content) {
   }
   const { objUUID: uuid, result } = content;
   const { lowQualityURL, mediaQualityURL } = result;
-  const video = ObjectModel.findOne({ uuid });
+  const video = await ObjectModel.findOne({ uuid });
   if (video) {
-    cano.log.debug(video.uuid);
-    cano.log.debug(video.name);
-    cano.log.debug(video.id);
     const res = await ObjectModel.updateOne({ _id: video.id }, { $set: { lowQualityURL, mediaQualityURL } });
     cano.log.debug('ObjectModel.updateOne -> result', JSON.stringify(res));
   } else {
