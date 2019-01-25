@@ -31,7 +31,7 @@ async function processImage(content) {
   if (content.status === 'ERROR') {
     return cano.log.error('TagService -> process -> Invalid imagen content:', content.amazonError);
   }
-  const { objUUID: uuid, result } = content;
+  const { uuid, result } = content;
   const data = {
     uuid, 
     result,
@@ -45,7 +45,7 @@ async function processVideo(action, content) {
     return cano.log.error('TagService -> process -> Invalid video content:', content.amazonError);
   }
   if (action === INIT_ACTION) {
-    const { amazonJobId: jobId, objUUID: uuid } = content;
+    const { amazonJobId: jobId, uuid } = content;
     const data = {
       jobId,
       uuid,
@@ -62,7 +62,7 @@ async function processVideoMediaConvert(content) {
   if (content.status === 'ERROR') {
     return cano.log.error('TagService -> process -> Invalid video content:', content.amazonError);
   }
-  const { objUUID: uuid, result } = content;
+  const { uuid, result } = content;
   const { lowQualityURL, mediaQualityURL } = result;
   const video = await ObjectModel.findOne({ uuid });
   if (video) {
