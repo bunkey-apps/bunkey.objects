@@ -1,11 +1,13 @@
 import MongooseModel from 'mongoose-model-class';
 import map from 'lodash/map';
+import includes from 'lodash/includes';
 
 class Workspace extends MongooseModel {
   schema() {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
+      role: { type: String, required: true, enum: ['admin', 'operator'] },
       favorites: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', index: true },
     };
   }
@@ -30,6 +32,13 @@ class Workspace extends MongooseModel {
       .populate('user', 'name email avatar role')
       .exec();
     return map(wss, w => w.user);
+  }
+
+  static updateUserRole(client, user, role) {
+    if (!includes(['admin', 'operator'], role)) {
+      throw new UserError('InvalidRole', `The role ${role} is invalid.`);
+    }
+    return this.updateOne({ client, user }, { $set: { role } });
   }
 
   static async getClients(user) {

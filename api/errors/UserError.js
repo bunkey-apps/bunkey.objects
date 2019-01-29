@@ -10,4 +10,8 @@ module.exports = {
     status: 404,
     description: 'User not found.',
   },
+  InvalidRole: {
+    status: 400,
+    description: 'Invale role.',
+  },
 };

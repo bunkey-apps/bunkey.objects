@@ -12,6 +12,7 @@ class UserController {
 
   async deleteById({ params, response }) {
     await User.deleteById(params.id);
+    await Workspace.deleteMany({ user: params.id });
     response.status = 204;
   }
 }

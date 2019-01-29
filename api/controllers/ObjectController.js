@@ -56,6 +56,25 @@ class ObjectController {
     response.body = users;
   }
 
+  async updateWorkspacesByClient({ request: { body }, params, response }) {
+    const { id: client } = params;
+    cano.log.debug('updateWorkspacesByClient -> body', body);
+    const { action, user, role } = body;
+    switch (action) {
+      case 'updateRol': {
+        await Workspace.updateUserRole(client, user, role);
+        response.status = 204;
+        break;
+      }
+      default:
+        throw new CanoError(`The action ${action} is invalid.`, {
+          description: 'Invalid Action for update workspace.',
+          status: 400,
+          code: 'InvalidAction',
+        });
+    }
+  }
+
   async getWorkspacesByUser({ params, response }) {
     const { id: user } = params;
     const clients = await Workspace.getClients(user);
@@ -104,7 +123,9 @@ class ObjectController {
 
   async createFavorites({ params, response }) {
     const { user, client } = params;
-    await Workspace.create({ user, client });
+    const u = await User.getById(user);
+    const role = u.role === 'operator' ? 'operator' : 'admin';
+    await Workspace.create({ user, client, role });
     response.status = 204;
   }
 
