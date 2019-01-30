@@ -32,7 +32,7 @@ class Workspace extends MongooseModel {
       .populate('user', 'name email avatar role')
       .exec();
     return map(wss, w => ({
-      ...w.user.toJSON(),
+      ...(JSON.parse(JSON.stringify(w.user))),
       clientRole: w.role,
     }));
   }
