@@ -31,7 +31,10 @@ class Workspace extends MongooseModel {
     const wss = await this.find({ client })
       .populate('user', 'name email avatar role')
       .exec();
-    return map(wss, w => w.user);
+    return map(wss, w => ({
+      ...w.user.toJSON(),
+      clientRole: w.role,
+    }));
   }
 
   static updateUserRole(client, user, role) {

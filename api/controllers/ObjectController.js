@@ -49,6 +49,13 @@ class ObjectController {
     response.body = object;
   }
 
+  async getWorkspace({ params, response }) {
+    const { id: client, user } = params;
+    const workspace = await Workspace.findOne({ client, user });
+    response.status = 200;
+    response.body = workspace;
+  }
+
   async getWorkspacesByClient({ params, response }) {
     const { id: client } = params;
     const users = await Workspace.getUsers(client);
@@ -61,7 +68,7 @@ class ObjectController {
     cano.log.debug('updateWorkspacesByClient -> body', body);
     const { action, user, role } = body;
     switch (action) {
-      case 'updateRol': {
+      case 'updateRole': {
         await Workspace.updateUserRole(client, user, role);
         response.status = 204;
         break;
