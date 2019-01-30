@@ -31,10 +31,11 @@ class Workspace extends MongooseModel {
     const wss = await this.find({ client })
       .populate('user', 'name email avatar role')
       .exec();
-    return map(wss, w => ({
-      ...w.user.toJSON(),
-      clientRole: w.role,
-    }));
+    return map(wss, (w) => {
+      const user = JSON.parse(JSON.stringify(w.user));
+      user.clientRole = w.role;
+      return user;
+    });
   }
 
   static updateUserRole(client, user, role) {
@@ -127,7 +128,6 @@ class Workspace extends MongooseModel {
 
   config(schema) {
     schema.index({ '$**': 'text' });
-    schema.set('toJSON', { getters: true, virtuals: false });
   }
 }
 
