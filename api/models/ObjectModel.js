@@ -234,7 +234,9 @@ function buildCriteria(query) {
   };
   if (search) {
     Object.assign(criteria, {
-      $text: { $search: search },
+      $or: [
+        { $text: { $search: search } }, { name: { $regex: `.*${search}.*`, $options: 'i' } },
+      ],
     });
   }
   if (status) {
