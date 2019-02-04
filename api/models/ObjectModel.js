@@ -62,6 +62,7 @@ class ObjectModel extends MongooseModel {
           'workspace',
           'image',
           'video',
+          'document',
         ];
         if (!includes(validTypes, doc.type)) {
           throw new ObjectError('invalidType', 'Object type invalid.');
@@ -74,7 +75,7 @@ class ObjectModel extends MongooseModel {
           throw new ObjectError('invalidTypeAsParent', 'can\'t create object into workspace.');
         }
       }
-      if (includes(['image', 'video'], doc.type)) {
+      if (includes(['image', 'video', 'document'], doc.type)) {
         if (!doc.uuid || !doc.originalURL) {
           const fields = [];
           if (!doc.uuid) {

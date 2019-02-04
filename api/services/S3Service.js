@@ -11,10 +11,7 @@ class S3Service {
     });
   }
 
-  /* TODO: Se debe arreglar el permiso del archivo a uno más acorde.
-    */
-
-    getPresignedURL({ Key, mimeType: ContentType, uuid }, action = 'putObject') {
+  getPresignedURL({ Key, mimeType: ContentType, uuid }, action = 'putObject') {
     const params = {
       Key,
       ContentType,
@@ -25,12 +22,24 @@ class S3Service {
         uuid,
       },
     };
-    cano.log.debug('params', params);
     const futureFileURL = `${this.s3URL}${Key}`;
     return new Promise((resolve, reject) => {
       this.s3.getSignedUrl(action, params, (err, url) => {
         if (err) reject(err);
         resolve({ uuid, url, futureFileURL });
+      });
+    });
+  }
+
+  deleteObject(Key) {
+    const params = {
+      Key,
+      Bucket: this.bucketName,
+    };
+    return new Promise((resolve, reject) => {
+      this.s3.deleteObject(params, (err, data) => {
+        if (err) reject(err);
+        resolve(data);
       });
     });
   }
