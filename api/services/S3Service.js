@@ -15,7 +15,7 @@ class S3Service {
     const params = {
       Key,
       ContentType,
-      ContentDisposition: 'attachment;',
+      ContentDisposition: 'attachment',
       ACL: 'public-read',
       Bucket: this.bucketName,
       Expires: 1800,
