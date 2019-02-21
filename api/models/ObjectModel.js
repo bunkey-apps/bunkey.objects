@@ -1,6 +1,8 @@
 import MongooseModel from 'mongoose-model-class';
 import SearchService from 'search-service-mongoose';
 import includes from 'lodash/includes';
+// import filter from 'lodash/filter';
+// import map from 'lodash/map';
 import last from 'lodash/last';
 import pick from 'lodash/pick';
 import moment from 'moment';
@@ -122,7 +124,7 @@ class ObjectModel extends MongooseModel {
     return this.model('ObjectModel').update({ _id }, { $addToSet: { children: object.id } });
   }
 
-  removeChildren(object) {
+  deleteremoveChildren(object) {
     const { _id } = this;
     return this.model('ObjectModel').update({ _id }, { $pull: { children: object.id } });
   }
@@ -165,9 +167,10 @@ class ObjectModel extends MongooseModel {
       throw new ObjectError('notDeleteRootObject', 'You can not delete the root object.');
     }
     const parent = await this.getById(last(object.parents));
-    await parent.removeChildren(object);
+    await parent.deleteremoveChildren(object);
     await RecentObject.deleteMany({ object: object.id });
     await Shared.deleteMany({ object: object.id });
+    // await deleteChildren(object.children);
     return this.deleteOne({ _id });
   }
 
@@ -182,7 +185,7 @@ class ObjectModel extends MongooseModel {
     if (String(newParent.client) !== String(object.client)) {
       throw new ObjectError('FolderIsNotFromClient', 'Folder is not from the object\'s client.');
     }
-    await oldParent.removeChildren(object);
+    await oldParent.deleteremoveChildren(object);
     await newParent.setChildren(object);
     await this.update({ _id: object.id }, { $set: { parents: [...newParent.parents, newParent.id] } });
   }
@@ -280,5 +283,27 @@ function buildCriteria(query) {
   }
   return criteria;
 }
+
+// function deleteChildren(children) {
+//   const chi = filter(children, c => c.type !== 'folder');
+//   if (chi.length) {
+//     return Promise.all(map(chi, c => ObjectModel.deleteById(c._id)));
+//   }
+//   return Promise.resolve();
+// }
+
+// async function deleteToFavorite(client, object) {
+//   const workspace = await Workspace.find({ client });
+//   return Promise.all(map(workspace, ws => {
+//     return new Promise(async (resolve, reject) => {
+//       try {
+//         const object = await ObjectModel.getById(ws.favorites);
+//         object.
+//       } catch (error) {
+//         reject(error);
+//       }
+//     });
+//   })); 
+// }
 
 module.exports = ObjectModel;
