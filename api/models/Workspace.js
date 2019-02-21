@@ -7,7 +7,7 @@ class Workspace extends MongooseModel {
     return {
       client: { type: MongooseModel.types.ObjectId, ref: 'Client', require: true },
       user: { type: MongooseModel.types.ObjectId, ref: 'User', require: true },
-      role: { type: String, enum: ['admin', 'operator'], default: 'operator' },
+      role: { type: String, required: true, enum: ['admin', 'operator'] },
       favorites: { type: MongooseModel.types.ObjectId, ref: 'ObjectModel', index: true },
     };
   }

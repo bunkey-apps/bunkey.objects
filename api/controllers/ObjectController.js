@@ -140,7 +140,9 @@ class ObjectController {
     const { user, client } = params;
     let workspace = await Workspace.findOne({ user, client });
     if (!workspace) {
-      await Workspace.create({ user, client });
+      const u = await User.getById(user);
+      const role = u.role === 'operator' ? 'operator' : 'admin';
+      await Workspace.create({ user, client, role });
     }
     workspace = await Workspace.getByUserIdAndClientId(user, client);
     const cli = await Client.getById(workspace.client);
