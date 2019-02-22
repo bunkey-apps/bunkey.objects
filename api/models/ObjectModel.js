@@ -171,8 +171,11 @@ class ObjectModel extends MongooseModel {
     await parent.removeChildren(object);
     await RecentObject.deleteMany({ object: object.id });
     await Shared.deleteMany({ object: object.id });
-    await deleteChildren(object.children);
-    await deleteObjectInS3(object);
+    if (object.type === 'folder') {
+      await deleteChildren(object.children);
+    } else {
+      await deleteObjectInS3(object);
+    }
     await deleteToFavorite(object.client, object.id);
     return this.deleteOne({ _id });
   }
