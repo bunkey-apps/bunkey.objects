@@ -113,7 +113,6 @@ class ObjectModel extends MongooseModel {
 
   setAutoTags(tags) {
     const { _id } = this;
-    cano.log.debug('setDescriptiveTags -> tags', tags);
     return this.model('ObjectModel').updateOne({ _id }, {
       $addToSet: { 'metadata.descriptiveTags': { $each: tags } },
       $set: { autoTaggingReady: true },
@@ -122,22 +121,22 @@ class ObjectModel extends MongooseModel {
 
   setChildren(object) {
     const { _id } = this;
-    return this.model('ObjectModel').update({ _id }, { $addToSet: { children: object.id } });
+    return this.model('ObjectModel').updateOne({ _id }, { $addToSet: { children: object.id } });
   }
 
   removeChildren(object) {
     const { _id } = this;
-    return this.model('ObjectModel').update({ _id }, { $pull: { children: object.id } });
+    return this.model('ObjectModel').updateOne({ _id }, { $pull: { children: object.id } });
   }
 
   setSharedExternal(email) {
     const { _id } = this;
-    return this.model('ObjectModel').update({ _id }, { $addToSet: { sharedExternal: email } });
+    return this.model('ObjectModel').updateOne({ _id }, { $addToSet: { sharedExternal: email } });
   }
 
   removeSharedExternal(email) {
     const { _id } = this;
-    return this.model('ObjectModel').update({ _id }, { $pull: { sharedExternal: email } });
+    return this.model('ObjectModel').updateOne({ _id }, { $pull: { sharedExternal: email } });
   }
 
   static async get(query) {
@@ -159,7 +158,7 @@ class ObjectModel extends MongooseModel {
     if (object.type === 'root') {
       throw new ObjectError('notUpdateRootObject', 'Object not found.');
     }
-    return this.update({ _id }, { $set: pick(data, ['name', 'metadata']) });
+    return this.updateOne({ _id }, { $set: pick(data, ['name', 'metadata']) });
   }
 
   static async deleteById(_id) {
@@ -193,7 +192,7 @@ class ObjectModel extends MongooseModel {
     }
     await oldParent.removeChildren(object);
     await newParent.setChildren(object);
-    await this.update({ _id: object.id }, { $set: { parents: [...newParent.parents, newParent.id] } });
+    await this.updateOne({ _id: object.id }, { $set: { parents: [...newParent.parents, newParent.id] } });
   }
 
   static async setReadyStatus(objectIds) {
@@ -297,7 +296,6 @@ function deleteObjectInS3(object) {
     lowQualityURL,
   } = object;
   const bucketName = S3Service.getBucketName();
-  cano.log.debug('bucketName', bucketName);
   const promises = [];
   promises.push(S3Service.deleteObject(last(split(originalURL, bucketName)).substring(1)));
   promises.push(S3Service.deleteObject(last(split(mediaQualityURL, bucketName)).substring(1)));
@@ -307,12 +305,12 @@ function deleteObjectInS3(object) {
 
 function deleteChildren(children) {
   const chi = filter(children, c => c.type !== 'folder');
-  return Promise.all(map(chi, c => ObjectModel.deleteById(c._id)));
+  return Promise.all(map(chi, c => cano.app.models.ObjectModel.deleteById(c._id)));
 }
 
 async function deleteToFavorite(client, object) {
-  const workspace = await Workspace.find({ client });
-  return Promise.all(map(workspace, ws => ws.deleteObject(ws.favorites, object))); 
+  const workspaces = await Workspace.find({ client });
+  return Promise.all(map(workspaces, ws => ws.deleteObject(ws.favorites, object))); 
 }
 
 module.exports = ObjectModel;
