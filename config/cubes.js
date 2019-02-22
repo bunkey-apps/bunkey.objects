@@ -5,7 +5,7 @@ import RoutersCube from 'cano-cube-routers';
 import MongooseCube from 'cano-cube-mongoose';
 import PassportCube from 'cano-cube-passport';
 import ErrorCube from 'cano-cube-error';
-// import AMQPCube from './amqp';
+import AMQPCube from './amqp';
 
 module.exports = [
   ErrorCube,
@@ -15,5 +15,5 @@ module.exports = [
   ControllersCube,
   PoliciesCube,
   RoutersCube,
-  // AMQPCube,
+  AMQPCube,
 ];
