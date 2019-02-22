@@ -11,6 +11,10 @@ class S3Service {
     });
   }
 
+  getBucketName() {
+    return this.bucketName;
+  }
+
   getPresignedURL({ Key, mimeType: ContentType, uuid }, action = 'putObject') {
     const params = {
       Key,
@@ -33,6 +37,7 @@ class S3Service {
   }
 
   deleteObject(Key) {
+    cano.log.debug('deleteObject -> Key', Key);
     const params = {
       Key,
       Bucket: this.bucketName,

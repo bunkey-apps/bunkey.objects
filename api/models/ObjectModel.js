@@ -1,10 +1,11 @@
 import MongooseModel from 'mongoose-model-class';
 import SearchService from 'search-service-mongoose';
 import includes from 'lodash/includes';
-// import filter from 'lodash/filter';
-// import map from 'lodash/map';
+import filter from 'lodash/filter';
+import map from 'lodash/map';
 import last from 'lodash/last';
 import pick from 'lodash/pick';
+import split from 'lodash/split';
 import moment from 'moment';
 
 const OBJECT_TYPES = [
@@ -124,7 +125,7 @@ class ObjectModel extends MongooseModel {
     return this.model('ObjectModel').update({ _id }, { $addToSet: { children: object.id } });
   }
 
-  deleteremoveChildren(object) {
+  removeChildren(object) {
     const { _id } = this;
     return this.model('ObjectModel').update({ _id }, { $pull: { children: object.id } });
   }
@@ -167,10 +168,12 @@ class ObjectModel extends MongooseModel {
       throw new ObjectError('notDeleteRootObject', 'You can not delete the root object.');
     }
     const parent = await this.getById(last(object.parents));
-    await parent.deleteremoveChildren(object);
+    await parent.removeChildren(object);
     await RecentObject.deleteMany({ object: object.id });
     await Shared.deleteMany({ object: object.id });
-    // await deleteChildren(object.children);
+    await deleteChildren(object.children);
+    await deleteObjectInS3(object);
+    await deleteToFavorite(object.client, object.id);
     return this.deleteOne({ _id });
   }
 
@@ -185,7 +188,7 @@ class ObjectModel extends MongooseModel {
     if (String(newParent.client) !== String(object.client)) {
       throw new ObjectError('FolderIsNotFromClient', 'Folder is not from the object\'s client.');
     }
-    await oldParent.deleteremoveChildren(object);
+    await oldParent.removeChildren(object);
     await newParent.setChildren(object);
     await this.update({ _id: object.id }, { $set: { parents: [...newParent.parents, newParent.id] } });
   }
@@ -284,26 +287,29 @@ function buildCriteria(query) {
   return criteria;
 }
 
-// function deleteChildren(children) {
-//   const chi = filter(children, c => c.type !== 'folder');
-//   if (chi.length) {
-//     return Promise.all(map(chi, c => ObjectModel.deleteById(c._id)));
-//   }
-//   return Promise.resolve();
-// }
+function deleteObjectInS3(object) {
+  const {
+    originalURL,
+    mediaQualityURL,
+    lowQualityURL,
+  } = object;
+  const bucketName = S3Service.getBucketName();
+  cano.log.debug('bucketName', bucketName);
+  const promises = [];
+  promises.push(S3Service.deleteObject(last(split(originalURL, bucketName)).substring(1)));
+  promises.push(S3Service.deleteObject(last(split(mediaQualityURL, bucketName)).substring(1)));
+  promises.push(S3Service.deleteObject(last(split(lowQualityURL, bucketName)).substring(1)));
+  return Promise.all(promises);
+}
 
-// async function deleteToFavorite(client, object) {
-//   const workspace = await Workspace.find({ client });
-//   return Promise.all(map(workspace, ws => {
-//     return new Promise(async (resolve, reject) => {
-//       try {
-//         const object = await ObjectModel.getById(ws.favorites);
-//         object.
-//       } catch (error) {
-//         reject(error);
-//       }
-//     });
-//   })); 
-// }
+function deleteChildren(children) {
+  const chi = filter(children, c => c.type !== 'folder');
+  return Promise.all(map(chi, c => ObjectModel.deleteById(c._id)));
+}
+
+async function deleteToFavorite(client, object) {
+  const workspace = await Workspace.find({ client });
+  return Promise.all(map(workspace, ws => ws.deleteObject(ws.favorites, object))); 
+}
 
 module.exports = ObjectModel;
